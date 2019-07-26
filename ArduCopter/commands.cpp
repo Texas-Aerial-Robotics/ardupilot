@@ -12,6 +12,7 @@ void Copter::update_home_from_EKF()
 {
     // exit immediately if home already set
     if (ap.home_state != HOME_UNSET) {
+        //gcs_send_text(MAV_SEVERITY_INFO,"TAR: Home already set");
         return;
     }
 
@@ -72,13 +73,14 @@ bool Copter::set_home_and_lock(const Location& loc)
 bool Copter::set_home(const Location& loc)
 {
     // check location is valid
-    if (loc.lat == 0 && loc.lng == 0) {
-        return false;
-    }
+    // if (loc.lat == 0 && loc.lng == 0) {
+    //     return false;
+    // }
 
     // check EKF origin has been set
     Location ekf_origin;
     if (!ahrs.get_origin(ekf_origin)) {
+        gcs_send_text(MAV_SEVERITY_INFO ,"TAR: ekf origin not set");
         return false;
     }
 
@@ -154,6 +156,7 @@ bool Copter::far_from_EKF_origin(const Location& loc)
     // check distance to EKF origin
     const struct Location &ekf_origin = inertial_nav.get_origin();
     if (get_distance(ekf_origin, loc) > EKF_ORIGIN_MAX_DIST_M) {
+        gcs_send_text(MAV_SEVERITY_INFO ,"TAR: Drone too far from origin");
         return true;
     }
 
